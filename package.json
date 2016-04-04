@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "build": "tsc && webpack",
-    "test": "echo Please run test/index.html for unit tests",
+    "build": "tsc && webpack && cp -f node_modules/phaser/build/phaser.js front/scripts/phaser.js",
+    "test": "echo Please run test/index.html for unit tests && exit 1",
     "start": "http-server ./front"
   },
   "author": "Carl Winkler",
