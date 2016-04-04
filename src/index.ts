@@ -1,3 +1,5 @@
-import engine from './engine';
+import Engine from './engine';
 
-engine;
+const engine = new Engine();
+
+export default engine;
