@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "build": "tsc && webpack && cp -f node_modules/phaser/build/phaser.js front/scripts/phaser.js",
+    "build": "tsc && webpack",
     "test": "echo Please run test/index.html for unit tests && exit 1",
     "start": "http-server ./front"
   },

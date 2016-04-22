@@ -1,5 +1,6 @@
 import init from './game';
 import Player from './player';
+import headsUpDisplay from './HUD';
 import * as inits from './initialisers';
 
 export default class Engine {
@@ -12,11 +13,33 @@ export default class Engine {
     }
 
     player: Phaser.Sprite;
+    headsUpDisplay: headsUpDisplay;
     platforms: Phaser.Group;
+    stars: Phaser.Group;
     cursors: Phaser.CursorKeys;
     game: Phaser.Game;
 
     create = () => {
+
+        const stars = this.game.add.group();
+        stars.enableBody = true;
+        this.stars = stars;
+
+        const star = (i) => {
+            var star = stars.create(i * 70, 0, 'star');
+            star.body.gravity.y = 6;
+            star.body.bounce.y = 0.7 + Math.random() * 0.2;
+            return star;
+        }
+
+
+        var starList = [];
+
+        for (var i = 0; i < 12; i++) {
+            starList.push(star(i));
+        }
+        console.log(starList);
+
         const platforms = this.game.add.group();
         platforms.enableBody = true;
         this.platforms = platforms;
@@ -37,9 +60,41 @@ export default class Engine {
             coordinate: { x: 32, y: this.game.world.height - 150 }
         }
         this.player = new Player(playerOpts).player;
+
+        const headsUpDisplayOpts = {
+            game: this.game,
+            coordinate: {
+                x: 16,
+                y: 16
+            },
+            score: null,
+            style: {
+                font: null,
+                fontStyle: null,
+                fontVariant: null,
+                fontWeight: null,
+                fontSize: null,
+                backgroundColor: null,
+                fill: null,
+                align: null,
+                boundsAlignH: null,
+                boundAlignV: null,
+                stroke: null,
+                strokeThickness: null,
+                wordWrap: null,
+                wordWrapWidth: null,
+                tabs: null
+            }
+        }
+
+        this.headsUpDisplay = new headsUpDisplay(headsUpDisplayOpts);
+
     }
 
     update = () => {
+
+        this.game.physics.arcade.collide(this.stars, this.platforms);
+        this.game.physics.arcade.overlap(this.player, this.stars, this.collectStar, null, this);
         this.game.physics.arcade.collide(this.player, this.platforms);
         const cursors = this.game.input.keyboard.createCursorKeys();
 
@@ -60,5 +115,14 @@ export default class Engine {
         if (cursors.up.isDown && this.player.body.touching.down) {
             this.player.body.velocity.y = -350;
         }
+    }
+
+    collectStar(player, star) {
+        var options = this.headsUpDisplay.options;
+        star.kill();
+        this.headsUpDisplay.options.score += 10;
+        
+        this.headsUpDisplay.hud.text = (options.score)?'Score: '+options.score: 'Score: 0'; 
+       
     }
 }
