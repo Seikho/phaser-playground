@@ -1,6 +1,7 @@
 import init from './game';
-import Player from './player';
-import headsUpDisplay from './HUD';
+import Player from '../player/player';
+import Enemy from '../npcs/enemy';
+import headsUpDisplay from '../display/HUD';
 import * as inits from './initialisers';
 
 export default class Engine {
@@ -13,6 +14,7 @@ export default class Engine {
     }
 
     player: Phaser.Sprite;
+    enemy: Phaser.Sprite;
     headsUpDisplay: headsUpDisplay;
     platforms: Phaser.Group;
     stars: Phaser.Group;
@@ -64,6 +66,15 @@ export default class Engine {
         }
         this.player = new Player(playerOpts).player;
 
+        const enemyOpts = {
+            game: this.game,
+            sprite: 'brownie',
+            coordinate: { x: 450, y: this.game.world.height - 350 }
+        }
+
+        this.enemy = new Enemy(enemyOpts).enemy;
+
+
         const headsUpDisplayOpts = {
             game: this.game,
             coordinate: {
@@ -99,6 +110,8 @@ export default class Engine {
         this.game.physics.arcade.collide(this.stars, this.platforms);
         this.game.physics.arcade.overlap(this.player, this.stars, this.collectStar, null, this);
         this.game.physics.arcade.collide(this.player, this.platforms);
+        this.game.physics.arcade.overlap(this.enemy, this.player, () => { this.gameOver(false) }, null, this);
+        this.game.physics.arcade.collide(this.enemy, this.platforms);
         const keyboard = this.game.input.keyboard;
         const cursors = keyboard.createCursorKeys();
 
@@ -106,7 +119,7 @@ export default class Engine {
         this.player.body.velocity.x = 0;
         if (this.devMode) {
             if (keyboard.isDown(Phaser.KeyCode.SPACEBAR)) {
-                this.gameOver();
+                this.gameOver(true);
             }
         }
 
@@ -135,16 +148,19 @@ export default class Engine {
     }
 
     checkGameOver(score: number): void {
-        (score === 120) ? this.gameOver() : null;
+        (score === 120) ? this.gameOver(true) : null;
     }
 
-    gameOver(): void {
+    gameOver(win: boolean): void {
         const style = { font: "bold 32px Arial", fill: "#000", boundsAlignH: "center", boundAlignV: "middle" };
 
-        const displayText = this.game.add.text(0, 0, 'You Win!', style);
+        var displayText;
+        (win) ? displayText = this.game.add.text(0, 0, 'You Win!', style) : displayText = this.game.add.text(0, 0, 'You Lose!', style);
         displayText.setTextBounds(0, 100, this.game.width, this.game.height);
 
         this.headsUpDisplay.hud = displayText;
         this.player.kill();
     }
+
+
 }

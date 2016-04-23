@@ -1,5 +1,5 @@
 module.exports = {
-    entry: './src/index.js',
+    entry: './src/app.js',
     devtool: 'source-map',
     output: {
         filename: 'index.js',

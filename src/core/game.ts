@@ -32,17 +32,16 @@ function preloadGame() {
     const assets = [
         'sky',
         'platform',
-        'star',
-        'dude' // Unused?
+        'star'
     ]
 
     assets.forEach(asset => game.load.image(asset, `assets/${asset}.png`));
     game.load.spritesheet('seikho', 'assets/seikho.png', 32, 32, 12);
+    game.load.spritesheet('brownie', 'assets/brownie.png', 32, 32, 4);
+    
 }
 
 function createGame() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
-
     game.add.sprite(0, 0, 'sky');
-    game.add.sprite(0, 0, 'star');
 }
